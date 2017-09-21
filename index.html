@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <link rel="stylesheet" href="">
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="http://at.alicdn.com/t/font_415162_bzopxw6ed9jatt9.css">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style type="text/css" media="screen">
+        .footer{
+            text-align:center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <button class="btn goBack" >返回上一级</button>
+        <div class="btn-group">
+              <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">添加<span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                  <li><a data-toggle="modal" data-target="#myModal1" >添加文件</a></li>
+                  <li><a data-toggle="modal" data-target="#myModal2" >添加文件夹</a></li>
+              </ul>
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>文件名字</th>
+
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody class="file">
+        <tr>
+            <td>
+                xx
+            </td>
+
+            <td>
+             <i class="icon iconfont  icon-shanchu"></i>
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    添加文件
+                </h4>
+            </div>
+            <div class="modal-body">
+               <input type="" name="" placeholder="文件名字" class="file_name">
+               <input type="" name="" placeholder="文件类型" class="file_type">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default addFile"
+                        data-dismiss="modal" >确认
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-hidden="true">×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    添加文件
+                </h4>
+            </div>
+            <div class="modal-body">
+               <input type="" name="" placeholder="文件夹名字" class="files_name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default addFiles"
+                        data-dismiss="modal" >确认
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div class="footer">
+    各位老师好，这是我的面试作品 谢谢观赏。<br>
+    by陈宇航 联系电话：17706635917
+</div>
+</body>
+<script >
+   // 维护的文件结构
+    let file={child:[
+       {name:'exe文件',type:'exe',id:'1'},
+       {name:'rar文件',type:'rar',id:'2'},
+       {name:'file文件夹',type:'file',id:'5',child:[
+            {name:'exe3文件',type:'exe',id:'6'},
+            {name:'rar1文件',type:'rar',id:'7'},
+            {name:'file文件夹2',type:'file',id:'8',child:[
+                {name:'exe3文件',type:'exe',id:'9'},
+                {name:'rar1文件',type:'rar',id:'10'}
+           ]},
+       ]},
+       {name:'exe文件1',type:'exe',id:'3'},
+       {name:'exe文件2',type:'exe',id:'4'}
+    ],id:"0"}
+    let CurrentId=0;//当前目录id
+    let nextId=11//下个加的文件的id
+
+    //渲染视图
+    function render(data){
+        let el='';//渲染的视图
+        for(let i=0;i<data.length;i++){
+            switch(data[i].type)
+                {
+                case 'exe':
+                  el+=`<tr>
+                        <td>
+                            <i class="icon iconfont icon-exe"></i>${data[i].name}
+                        </td>
+                        <td>
+                            <i class="icon iconfont  icon-shanchu" data-id='${data[i].id}'>删除文件</i>
+                        </td>
+                    </tr>`
+                  break;
+                case 'rar':
+                    el+=`<tr>
+                        <td>
+                            <i class="icon iconfont icon-RAR"></i>${data[i].name}
+                        </td>
+                        <td>
+                            <i class="icon iconfont  icon-shanchu" data-id='${data[i].id}'>删除文件</i>
+                        </td>
+                    </tr>`
+                  break;
+                case 'file':
+                    el+=`<tr>
+                        <td>
+                            <i class="icon iconfont icon-wenjianjia"></i>${data[i].name}
+                        </td>
+                        <td>
+                            <i class="icon iconfont  icon-shanchu" data-id='${data[i].id}'>删除文件</i>
+                            <i class="icon iconfont  icon-jinru" data-id='${data[i].id}'>打开文件夹</i>
+                        </td>
+                    </tr>`
+                    break;
+                default:
+                  el+=`<tr>
+                        <td>
+                            未知类型,文件名${data.name}
+                        </td>
+                        <td>
+                            <i class="icon iconfont  icon-shanchu" data-id='${data[i].id}'>删除文件</i>
+                        </td>
+                    </tr>`
+                }
+        }
+        $('.file').empty().append(el)
+    }
+    //获取下级的目录
+    function getNextfiles(parentId){
+        var file_data=""
+        if(parentId==0){
+            file_data=file.child;
+            return file_data;
+        }else{
+             let getfile=function(data){
+                for(let i=0;i<data.length;i++){
+                    if(data[i].id==parentId){
+                        file_data=data[i]
+                        return;
+                    }
+                    if(data[i].type=='file')getfile(data[i].child)
+                }
+            }
+            getfile(file.child)
+            return file_data.child;
+        }
+    }
+//获取当前的目录
+    function getfiles(parentId){
+        var file_data=""
+        if(parentId==0){
+            file_data=file.child;
+            return file_data;
+        }else{
+             let getfile=function(data){
+                for(let i=0;i<data.length;i++){
+                    if(data[i].id==parentId){
+                        file_data=data[i]
+                        return;
+                    }
+                    if(data[i].type=='file')getfile(data[i].child)
+                }
+            }
+            getfile(file.child)
+            return file_data.child;
+        }
+    }
+
+    //获取上级目录
+    function backfiles(parentId){
+        var file_data=""
+        if(parentId==0){
+            file_data=file.child;
+            return file_data;
+        }else{
+             let getfile=function(data){
+                for(let i=0;i<data.length;i++){
+                    if(data[i].type=='file'){
+                        for(let z=0;z<data[i].child.length;z++){
+                            if(data[i].child[z].id==parentId){
+                                file_data=data[i];
+                                return
+                            }
+
+                        }
+                        if(file_data=='')getfile(data[i].child)
+
+                    }
+                }
+            }
+            getfile(file.child)
+            if(file_data==''){file_data=file}
+            CurrentId=file_data.id
+            return file_data.child;
+        }
+    }
+    //添加文件or文件夹
+    function addfiles(parentId,info){
+        var file_data=""
+        if(parentId==0){
+            let canAdd=true
+            for(let z=0;z<file.child.length;z++){
+                if(file.child[z].name==info.name&&file.child[z].type==info.type){
+                    canAdd=false;
+                    alert("有重名文件")
+                }
+            }
+            if(canAdd)file.child.push(info)
+            file_data=file.child;
+            return file_data;
+        }else{
+             let getfile=function(data){
+                for(let i=0;i<data.length;i++){
+                    if(data[i].id==parentId){
+                        //判断是否有同名的文件
+                        let canAdd=true
+                        for(let z=0;z<data[i].child.length;z++){
+                            if(data[i].child[z].name==info.name&&data[i].child[z].type==info.type){
+                                canAdd=false;
+                                alert("有相同文件夹")
+                            }
+                        }
+                        if(canAdd)data[i].child.push(info)
+                        file_data=data[i]
+                        return;
+                    }
+                    if(data[i].type=='file')getfile(data[i].child)
+                }
+            }
+            getfile(file.child)
+            return file_data.child;
+        }
+    }
+
+      // 初始化文件结构
+      render(file.child)
+
+      //删除文件
+      $('.file').on('click','.icon-shanchu',function(){
+        let onlyId=$(this).attr('data-id')
+        //一般是ajax后台删除了在更新file和视图,但是没有后台所以直接吧file和视图更新
+        let getfile=function(data){
+            let file_data='';
+            for(let i=0;i<data.length;i++){
+                if(data[i].id==onlyId){
+                    data.splice(i,1)
+                }
+                if(data[i].type=='file')getfile(data[i].child)
+            }
+        }
+        getfile(file.child)
+        let files=getNextfiles(CurrentId)
+        render(files)
+      })
+
+      //进入下一层
+       $('.file').on('click','.icon-jinru',function(){
+        let onlyId=$(this).attr('data-id')
+        CurrentId=onlyId
+        let file =getfiles(onlyId)
+        render(file)
+      })
+
+       //返回上一级
+       $('.goBack').on('click',function(){
+        let onlyId=CurrentId
+        let file=backfiles(onlyId)
+        render(file)
+      })
+       //新建文件
+       $('.addFile').on('click',function(){
+        var info={};
+        info.name=$('.file_name').val()
+        info.type=$('.file_type').val()
+        info.id=nextId;
+        nextId++;
+        let file=addfiles(CurrentId,info)
+        render(file)
+      })
+
+       //新建文件夹
+       $('.addFiles').on('click',function(){
+        var info={};
+        info.name=$('.files_name').val()
+        info.type='file'
+        info.id=nextId;
+        info.child=[]
+        nextId++;
+        let file=addfiles(CurrentId,info)
+        render(file)
+      })
+
+</script>
+
+
+</html>
